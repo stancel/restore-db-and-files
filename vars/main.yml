@@ -1,0 +1,40 @@
+---
+# vars file for restore-db-and-files
+
+#####     Required Variables      #####
+# Fill in appropriate values below unless passing from a higher precedence
+
+
+# The root password for your MySQL, MariaDB or Percona Server DB instance to create the DB and user.
+mysql_root_password: "your MySQL root password"
+
+# The name of the database to restore
+db_name: "my-db-name-to-restore"
+
+# Absolute file path where Bareos files were restored to
+path_to_restored_files: "/tmp/bareos-restores"
+
+# File paths of Bareos restored files that need to be copied to some other path
+filesets_to_restore:
+  - "/var/www/html"
+
+# File path where DB dump file to restore is located
+db_backup_file_path: "{{ path_to_restored_files }}/backups/mysql/current"
+
+
+#####     Optional Variables      #####
+
+# These variables are set with the below defaults in defaults/main.yml. 
+# Only uncomment and change them or pass values if you would like
+
+---
+# defaults file for restore-db-and-files
+
+# The Document Root or file path where Mantis files will be stored and served up by your webserver. The default path is "/var/www/html" and assumes you are running Apache2 on Debian or Ubuntu
+#web_files_path: "/var/www/html"
+
+# The linux username used by your webserver. The default value is "www-data" which assumes Apache is used on a Debian or Ubuntu linux
+#web_user: "www-data"
+
+# The linux group used by your webserver. The default value is "www-data" which assumes Apache is used on a Debian or Ubuntu linux
+#web_group: "www-data"

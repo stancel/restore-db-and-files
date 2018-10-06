@@ -1,0 +1,75 @@
+---
+# tasks file for restore-db-and-files
+
+- name: Find GZipped MySQL Dump File to Restore
+  find:
+    paths: "{{ db_backup_file_path }}"
+    patterns: "*.gz"
+  register: db_backup_files
+
+- name: MYSQL | Restore database
+  mysql_db:
+    name: "{{ db_name }}"
+    login_password: "{{ mysql_root_password }}"
+    state: import
+    target: "{{ item.path }}"
+  with_items: "{{ db_backup_files.files }}"
+
+- name: Clearing out existing web directory
+  file: 
+    state: absent 
+    path: "{{ web_files_path }}/"
+
+- name: Re-creating the web directory
+  file:
+    path: "{{ web_files_path }}"
+    state: directory
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: 0644
+    recurse: yes
+
+- name: Copy over restored files back into web directory and remove any additional ones
+  synchronize:
+    src: "{{ path_to_restored_files }}{{ item }}/"
+    dest: "{{ item }}"
+    delete: yes
+    recursive: yes
+    copy_links: true
+  with_items: "{{ filesets_to_restore }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+# Specific to SuiteCRM Deployments - move this to its own role 
+#- name: "Run SuiteCRM Quick Repair and Rebuild script"
+#  shell: 'php /usr/local/bin/repair.php'
+#  args:
+#    chdir: '{{ web_files_path }}'
+
+- name: "Setting ownership and permissions for web directory"
+  file:
+    path: "{{ web_files_path }}"
+    state: directory
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: 0755
+    recurse: yes
+
+# Stat these to see if they exist before executing 
+#- name: "Removing Git folder from web server permissions"
+#  file:
+#    path: "{{ web_files_path }}/.git"
+#    state: directory
+#    owner: root
+#    group: root
+#    mode: 0640
+#    recurse: yes
+#
+#- name: "Removing .gitignore from web server permissions"
+#  file:
+#    path: "{{ web_files_path }}/.gitignore"
+#    state: file
+#    owner: root
+#    group: root
+#    mode: 0640
+#  notify: restart-apache
+

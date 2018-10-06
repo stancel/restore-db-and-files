@@ -1,0 +1,29 @@
+galaxy_info:
+  author: 'Brad Stancel'
+  description: This role picks up from the stancel.restore-bareos-backup role where files are restored to a computer or server that were backed up from some server or computer onto a Bareos or Bacula backup system. The role restores a Gzipped MySQL dump file into a MySQL/Percona/MariaDB DBMS and copies one or more file paths into the correct/final location paths needed to fully restore a working backup to the server you are running this role against. An example of a file path to copy over might be the web application files being copied over into the webserver's document root, but could be any path.
+  
+  company: YourOnlineDept.com
+
+  license: GPLv3
+
+  min_ansible_version: 2.4
+
+
+  github_branch: master
+  
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+    - xenial
+  - name: Debian
+    versions:
+    - wheezy
+    - jessie
+    - stretch
+
+  galaxy_tags: 
+    - restore
+    - MySQL
+
+dependencies: []
