@@ -27,9 +27,6 @@ db_backup_file_path: "{{ path_to_restored_files }}/backups/mysql/current"
 # These variables are set with the below defaults in defaults/main.yml. 
 # Only uncomment and change them or pass values if you would like
 
----
-# defaults file for restore-db-and-files
-
 # The Document Root or file path where Mantis files will be stored and served up by your webserver. The default path is "/var/www/html" and assumes you are running Apache2 on Debian or Ubuntu
 #web_files_path: "/var/www/html"
 
