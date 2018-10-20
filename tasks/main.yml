@@ -1,26 +1,82 @@
 ---
 # tasks file for restore-db-and-files
 
-- name: Find GZipped MySQL Dump File to Restore
+- name: "Find GZipped MySQL Dump File to Restore"
   find:
     paths: "{{ db_backup_file_path }}"
     patterns: "*.gz"
   register: db_backup_files
 
-- name: MYSQL | Restore database
+- name: "Check if GZip is installed"
+  shell: command -v gunzip >/dev/null 2>&1
+  register: is_gunzip_installed
+  ignore_errors: yes
+
+- name: "Check if the GZipped backup exists or has already been unzipped previously"
+  stat:
+    path: "{{ item.path }}"
+  with_items: "{{ db_backup_files.files }}"
+  register: gzip_file_there  
+
+- name: "Debugging the gzip_file_there path variable"
+  debug: var=gzip_file_there
+
+- name: "Check if the GUnzipped file already exists"
+  stat:
+    path: "{{ item.path[:-3] }}"
+  with_items: "{{ db_backup_files.files }}"
+  register: gunzipped_file_there
+
+- name: "Debugging the gunzipped_file_there path variable"
+  debug: var=gunzipped_file_there
+
+- name: "Gunzip the MySQL Backup File - necessary b/c Ansible breaks importing larger GZipped MySQL backups"
+  become: true
+  become_method: sudo
+  shell: 'gunzip {{ item.path }}'
+  with_items: "{{ db_backup_files.files }}"
+  register: did_gunzip_run 
+  when: (is_gunzip_installed.rc == 0) and (gzip_file_there.results[0].stat.exists == true) 
+          and (gunzipped_file_there.results[0].stat.exists == false)
+
+- name: "Debugging the did_gunzip_run variable"
+  debug: 
+    var: did_gunzip_run
+  
+- name: "Wait until Gunzip Job completes"
+  become: true
+  become_method: sudo
+  wait_for:
+    delay: 2
+    path: "{{ item.path[:-3] }}"
+    state: present
+    timeout: 300
+  with_items: "{{ db_backup_files.files }}"
+  when: (did_gunzip_run.results[0].changed == true)
+
+#- name: MYSQL | Restore database
+#  mysql_db:
+#    name: "{{ db_name }}"
+#    login_password: "{{ mysql_root_password }}"
+#    state: import
+#    target: "{{ item.path }}"
+#  with_items: "{{ db_backup_files.files }}"
+
+- name: "MYSQL | Restore database"
   mysql_db:
     name: "{{ db_name }}"
-    login_password: "{{ mysql_root_password }}"
     state: import
-    target: "{{ item.path }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    target: "{{ item.path[:-3] }}"
   with_items: "{{ db_backup_files.files }}"
 
-- name: Clearing out existing web directory
+- name: "Clearing out existing web directory"
   file: 
     state: absent 
     path: "{{ web_files_path }}/"
 
-- name: Re-creating the web directory
+- name: "Re-creating the web directory"
   file:
     path: "{{ web_files_path }}"
     state: directory
@@ -29,7 +85,7 @@
     mode: 0644
     recurse: yes
 
-- name: Copy over restored files back into web directory and remove any additional ones
+- name: "Copy over restored files back into web directory and remove any additional ones"
   synchronize:
     src: "{{ path_to_restored_files }}{{ item }}/"
     dest: "{{ item }}"
@@ -39,12 +95,6 @@
   with_items: "{{ filesets_to_restore }}"
   delegate_to: "{{ inventory_hostname }}"
 
-# Specific to SuiteCRM Deployments - move this to its own role 
-#- name: "Run SuiteCRM Quick Repair and Rebuild script"
-#  shell: 'php /usr/local/bin/repair.php'
-#  args:
-#    chdir: '{{ web_files_path }}'
-
 - name: "Setting ownership and permissions for web directory"
   file:
     path: "{{ web_files_path }}"
@@ -53,6 +103,16 @@
     group: "{{ web_group }}"
     mode: 0755
     recurse: yes
+
+- name: "Ensure directories are 0755"
+  command: find {{ web_files_path }} -type d -exec chmod -c 0755 {} \;
+  register: chmod_result
+  changed_when: "chmod_result.stdout != \"\""
+
+- name: "Ensure files are 0644"
+  command: find {{ web_files_path }} -type f -exec chmod -c 0644 {} \;
+  register: chmod_result
+  changed_when: "chmod_result.stdout != \"\""
 
 # Stat these to see if they exist before executing 
 #- name: "Removing Git folder from web server permissions"
