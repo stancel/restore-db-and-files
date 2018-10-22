@@ -12,41 +12,48 @@ Need to already have MySQL / MariaDB / Percona Server and your webserver (Apache
 Role Variables
 --------------
 
-The Document Root or file path where Mantis files will be stored and served up by your webserver. The default path is `/var/www/html` and assumes you are running Apache2 on Debian or Ubuntu.
+The Document Root or file path where the files will be stored and served up by your webserver. The default path is `/var/www/html` and assumes you are running Apache2 on Debian or Ubuntu.
+
+First part => *restore_db_and_files_web_files_path:* is the root directory of your webserver
+
+Second part =>  *restore_db_and_files_web_directory_for_application:* is the application directory inside the root directory
+
+!Be aware of the starting / !
 
 ```
-	web_files_path: "/var/www/html"
+    restore_db_and_files_web_files_path: "/var/www"
+    restore_db_and_files_web_directory_for_application: "/html"
 ```
 The linux username used by your webserver. The default value is `www-data` which assumes Apache is used on a Debian or Ubuntu linux.
 
 ```
-	web_user: "www-data"
+	restore_db_and_files_web_user: "www-data"
 ```
 The linux group used by your webserver. The default value is `www-data` which assumes Apache is used on a Debian or Ubuntu linux.
 
 ```
-	web_group: "www-data"
+	restore_db_and_files_web_group: "www-data"
 ```
 The root password for your MySQL, MariaDB or Percona Server DB instance to create the DB and user.
 ```
-	mysql_root_password: "your MySQL root password"
+	restore_db_and_files_mysql_root_password: "your MySQL root password"
 ```
 The name of the database to restore
 ```
-	db_name: "suitecrm"
+	restore_db_and_files_db_name: "my-db-name-to-restore"
 ```
 Absolute file path where Bareos files were restored to
 ```
-	path_to_restored_files: "/tmp/bareos-restores"
+	restore_db_and_files_path_to_restored_files: "/tmp/bareos-restores"
 ```
 File paths of Bareos restored files that need to be copied to some other path
 ```
-	filesets_to_restore:
+	restore_db_and_files_filesets_to_restore:
   	  - "/var/www/html"
 ```
 File path where DB dump file to restore is located
 ```
-	db_backup_file_path: "{{ path_to_restored_files }}/backups/mysql/current"
+	restore_db_and_files_db_backup_file_path: "{{ restore_db_and_files_path_to_restored_files }}/backups/mysql/current"
 ```
 
 
@@ -70,12 +77,12 @@ or
 
 	- hosts: your_new_server 
 	  vars:
-		mysql_root_password: "your-super-secure-pw"
-		db_name: "your-db"
-		path_to_restored_files: "/tmp/bareos-restores"
-		filesets_to_restore:
+		restore_db_and_files_mysql_root_password: "your-super-secure-pw"
+		restore_db_and_files_db_name: "your-db"
+		restore_db_and_files_path_to_restored_files: "/tmp/bareos-restores"
+		restore_db_and_files_filesets_to_restore:
   	      - /var/www/html
-  	    db_backup_file_path: "{{ path_to_restored_files }}/backups/mysql/current"
+  	    restore_db_and_files_db_backup_file_path: "{{ path_to_restored_files }}/backups/mysql/current"
 	  roles:
 	    - { role: stancel.restore-db-and-files }
 
@@ -87,4 +94,6 @@ GPLv3
 Author Information
 ------------------
 
-Brad Stancel
+[Brad Stancel](https://github.com/stancel)
+
+
