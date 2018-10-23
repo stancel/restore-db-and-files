@@ -105,12 +105,12 @@
     recurse: yes
 
 - name: "Ensure directories are 0755"
-  command: find {{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }} -type d -exec chmod -c 0755 {} \;
+  command: find {{ restore_db_and_files_web_files_path }} -type d -exec chmod -c 0755 {} \;
   register: chmod_result
   changed_when: "chmod_result.stdout != \"\""
 
 - name: "Ensure files are 0644"
-  command: find {{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }} -type f -exec chmod -c 0644 {} \;
+  command: find {{ restore_db_and_files_web_files_path }} -type f -exec chmod -c 0644 {} \;
   register: chmod_result
   changed_when: "chmod_result.stdout != \"\""
 
