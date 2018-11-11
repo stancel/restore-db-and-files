@@ -87,8 +87,8 @@
 
 - name: "Copy over restored files back into web directory and remove any additional ones"
   synchronize:
-    src: "{{ restore_db_and_files_path_to_restored_files }}{{ item }}/"
-    dest: "{{ item }}"
+    src: "{{ restore_db_and_files_path_to_restored_files }}{{ item.from }}/"
+    dest: "{{ item.to }}"
     delete: yes
     recursive: yes
     copy_links: true

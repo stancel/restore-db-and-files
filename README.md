@@ -49,7 +49,10 @@ Absolute file path where Bareos files were restored to
 File paths of Bareos restored files that need to be copied to some other path
 ```
 	restore_db_and_files_filesets_to_restore:
-  	  - "{{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }}"
+	  - {
+		  from: "{{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }}",
+		  to: "{{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }}"
+		}
 ```
 File path where DB dump file to restore is located
 ```
