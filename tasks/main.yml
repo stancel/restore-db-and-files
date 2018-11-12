@@ -91,7 +91,8 @@
     dest: "{{ item.to }}"
     delete: yes
     recursive: yes
-    copy_links: true
+    copy_links: no
+    links: no
   with_items: "{{ restore_db_and_files_filesets_to_restore }}"
   delegate_to: "{{ inventory_hostname }}"
 
