@@ -28,7 +28,8 @@
   register: gunzipped_file_there
 
 - name: "Debugging the gunzipped_file_there path variable"
-  debug: var=gunzipped_file_there
+  debug: 
+    var: gunzipped_file_there
 
 - name: "Gunzip the MySQL Backup File - necessary b/c Ansible breaks importing larger GZipped MySQL backups"
   become: true
@@ -36,8 +37,8 @@
   shell: 'gunzip {{ item.path }}'
   with_items: "{{ db_backup_files.files }}"
   register: did_gunzip_run 
-  when: (is_gunzip_installed.rc == 0) and (gzip_file_there.results[0].stat.exists == true) 
-          and (gunzipped_file_there.results[0].stat.exists == false)
+  when: (is_gunzip_installed.rc == 0) and (gzip_file_there.results[0].stat.exists) 
+          and (not gunzipped_file_there.results[0].stat.exists)
 
 - name: "Debugging the did_gunzip_run variable"
   debug: 
@@ -133,4 +134,3 @@
 #    group: root
 #    mode: 0640
 #  notify: restart-apache
-

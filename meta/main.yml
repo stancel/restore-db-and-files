@@ -8,7 +8,6 @@ galaxy_info:
 
   min_ansible_version: 2.4
 
-
   github_branch: master
   
   platforms:
@@ -16,14 +15,16 @@ galaxy_info:
     versions:
     - trusty
     - xenial
+    - bionic
   - name: Debian
     versions:
     - wheezy
     - jessie
     - stretch
+    - buster
 
   galaxy_tags: 
     - restore
-    - MySQL
+    - mysql
 
 dependencies: []

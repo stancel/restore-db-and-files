@@ -4,7 +4,6 @@
 #####     Required Variables      #####
 # Fill in appropriate values below unless passing from a higher precedence
 
-
 # The root password for your MySQL, MariaDB or Percona Server DB instance to create the DB and user.
 restore_db_and_files_mysql_root_password: "your MySQL root password"
 
@@ -29,10 +28,8 @@ restore_db_and_files_filesets_to_restore:
 #      to: "/var/www/test40-wordpress/web/app/uploads"
 #    }
 
-
 # File path where DB dump file to restore is located
 restore_db_and_files_db_backup_file_path: "{{ restore_db_and_files_path_to_restored_files }}/backups/mysql/current"
-
 
 #####     Optional Variables      #####
 
