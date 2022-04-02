@@ -44,6 +44,13 @@ The name of the database to restore
 ```
 	restore_db_and_files_db_name: "my-db-name-to-restore"
 ```
+
+The hostname of the server you are restoring data from
+
+```
+	restore_db_and_files_previous_host_name: "previous-hostname-restoring-from"
+```
+
 Absolute file path where Bareos files were restored to
 
 ```

@@ -10,15 +10,27 @@ restore_db_and_files_mysql_root_password: "your MySQL root password"
 # The name of the database to restore
 restore_db_and_files_db_name: "my-db-name-to-restore"
 
+# The hostname of the server you are restoring data from
+restore_db_and_files_previous_host_name: "previous-hostname-restoring-from"
+
 # Absolute file path where Bareos files were restored to
 restore_db_and_files_path_to_restored_files: "/tmp/bareos-restores"
+
+
+# OLD - File paths of Bareos restored files that need to be copied to some other path
+#restore_db_and_files_filesets_to_restore:
+#  - {
+#      from: "{{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }}",
+#      to: "{{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }}"
+#    }
 
 # File paths of Bareos restored files that need to be copied to some other path
 restore_db_and_files_filesets_to_restore:
   - {
-      from: "{{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }}",
+      from: "{{ restore_db_and_files_web_files_path }}/{{ restore_db_and_files_previous_host_name }}/www",
       to: "{{ restore_db_and_files_web_files_path }}{{ restore_db_and_files_web_directory_for_application }}"
     }
+
 #  - {
 #      from: "/srv/www/processfast.com/current",
 #      to: "/var/www/test40-wordpress"
